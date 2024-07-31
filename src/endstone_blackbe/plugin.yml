@@ -1,10 +1,14 @@
 api_version: "0.5"
 
 commands:
-  blackbe:
-    description: "Query a player's blackbe status"
-    usages: [ "/bbquery [name: str]" ]
-    permissions: [ "blackbe.command.bbquery" ]
+  bq_name:
+    description: "Query a player's blackbe status by name"
+    usages: [ "/bq_name [name: str]" ]
+    permissions: [ "blackbe.command.bq_name" ]
+  bq_qq:
+    description: "Query a player's blackbe status by qq number"
+    usages: [ "/bq_qq [qq: int]" ]
+    permissions: [ "blackbe.command.bq_qq" ]
 
 
 permissions:
@@ -12,7 +16,11 @@ permissions:
     description: "Allow users to use all commands provided by this plugin."
     default: op
     children:
-      blackbe.command.bbquery: true
-  blackbe.command.bbquery:
-    description: "Allow users to use the /bbquery command."
+      blackbe.command.bq_name: true
+      blackbe.command.bq_qq: true
+  blackbe.command.bq_name:
+    description: "Allow users to use the /bq_name command."
+    default: op
+  blackbe.command.bq_qq:
+    description: "Allow users to use the /bq_qq command."
     default: op

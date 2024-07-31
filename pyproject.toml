@@ -18,4 +18,4 @@ keywords = ["endstone", "plugin", "blackbe"]
 Homepage = "https://github.com/endstone-essentials/blackbe"
 
 [project.entry-points."endstone"]
-example = "endstone_blackbe:BlackBePlugin"
+blackbe = "endstone_blackbe:BlackBePlugin"
