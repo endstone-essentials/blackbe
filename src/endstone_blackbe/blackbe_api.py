@@ -1,6 +1,6 @@
 from urllib.request import urlopen
 from urllib.parse import urlencode, quote
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, Future
 import json
 
 from endstone import ColorFormat
@@ -28,27 +28,26 @@ class BlackBeStatus:
                 f"{ColorFormat.GREEN}QQ: {ColorFormat.WHITE}{self.qq}")
 
 
-def query_status_by_qq(qq: int, callback) -> None:
+def query_status_by_qq(qq: int) -> Future[BlackBeStatus]:
     url = BLACKBE_API + "qq=" + str(qq)
-    _query_status(url, callback)
+    return _query_status(url)
 
 
-def query_status_by_name(name: str, callback) -> None:
+def query_status_by_name(name: str) -> Future[BlackBeStatus]:
     url = BLACKBE_API + "name=" + quote(name)
-    _query_status(url, callback)
+    return _query_status(url)
 
 
-def _query_status(url: str, callback) -> None:
+def _query_status(url: str) -> Future[BlackBeStatus]:
     def task():
         req = urlopen(url)
         if req.getcode() != 200:
             print(f"APIERROR:errcode={req.getcode()}")
-            return
+            return None
 
         result = json.loads(req.read())
         if result["status"] == STATUS_UNBAN:
-            callback(None)
-            return
+            return None
 
         data = result["data"]["info"][0]
         status = BlackBeStatus(
@@ -59,6 +58,6 @@ def _query_status(url: str, callback) -> None:
             qq=data["qq"]
         )
 
-        callback(status)
+        return status
 
-    executor.submit(task)
+    return executor.submit(task)

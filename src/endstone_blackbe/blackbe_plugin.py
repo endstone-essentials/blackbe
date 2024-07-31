@@ -1,3 +1,4 @@
+from concurrent.futures import Future
 from pathlib import Path
 
 import yaml
@@ -30,18 +31,18 @@ class BlackBePlugin(Plugin):
         if len(args) != 1:
             return False
 
-        def callback(result):
-            if result is None:
+        def callback(status: Future[blackbe_api.BlackBeStatus]):
+            if status.result() is None:
                 sender.send_message(f"{ColorFormat.GREEN}Player isn't found in BlackBE database")
                 return
             sender.send_message(f"{ColorFormat.YELLOW}Player is found in BlackBE database!")
-            sender.send_message(result.__str__())
+            sender.send_message(status.result().__str__())
 
         match command.name:
             case "bq_name":
-                blackbe_api.query_status_by_name(args[0].strip('"'), callback)
+                blackbe_api.query_status_by_name(args[0].strip('"')).add_done_callback(callback)
             case "bq_qq":
-                blackbe_api.query_status_by_qq(int(args[0]), callback)
+                blackbe_api.query_status_by_qq(int(args[0])).add_done_callback(callback)
 
         return True
 
@@ -49,12 +50,12 @@ class BlackBePlugin(Plugin):
     def on_player_join(self, event: PlayerJoinEvent):
         name = event.player.name
 
-        def callback(result):
-            if result is not None:
+        def callback(status: Future[blackbe_api.BlackBeStatus]):
+            if status.result() is not None:
                 event.player.kick("You are recorded in BlackBE!")
                 self.logger.info(f"{ColorFormat.RED}Player {name} failed BlackBE check!")
-                self.logger.info(result.__str__())
+                self.logger.info(status.result().__str__())
             else:
                 self.logger.info(f"{ColorFormat.GREEN}Player {name} passed BlackBE check!")
 
-        blackbe_api.query_status_by_name(name, callback)
+        blackbe_api.query_status_by_name(name).add_done_callback(callback)
