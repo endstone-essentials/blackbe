@@ -32,6 +32,7 @@ class BlackBePlugin(Plugin):
 
         def callback(result):
             if result is None:
+                sender.send_message(f"{ColorFormat.GREEN}Player isn't found in BlackBE database")
                 return
             sender.send_message(f"{ColorFormat.YELLOW}Player is found in BlackBE database!")
             sender.send_message(result.__str__())

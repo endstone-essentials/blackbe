@@ -47,6 +47,7 @@ def _query_status(url: str, callback) -> None:
 
         result = json.loads(req.read())
         if result["status"] == STATUS_UNBAN:
+            callback(None)
             return
 
         data = result["data"]["info"][0]
